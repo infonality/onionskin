@@ -1,0 +1,342 @@
+/* ---------------------------------------------------------------------------
+   Colour themes.
+
+   `data-theme` on <html> selects the light/dark base in base.css; `data-palette`
+   then layers a specific theme over it. Both selectors weigh the same, so this
+   file must load after base.css.
+
+   A theme only restates the tokens that make it distinctive — shadows, danger
+   colours and any unlisted syntax colours come from the light/dark base.
+--------------------------------------------------------------------------- */
+
+/* --- Light ---------------------------------------------------------------- */
+
+:root[data-palette="paper"] {
+  --bg-app: #f3efe7;
+  --bg-page: #faf7f0;
+  --bg-sunken: #eae4d8;
+  --bg-raised: #fffdf8;
+
+  --border: #e3ddd0;
+  --border-strong: #cec5b3;
+  --hover: rgba(70, 55, 30, 0.055);
+  --active: rgba(70, 55, 30, 0.095);
+
+  --text: #38342c;
+  --text-muted: #6b6355;
+  --text-faint: #857c68;
+
+  --accent: #a0522d;
+  --accent-hover: #8f4826;
+  --accent-soft: rgba(160, 82, 45, 0.12);
+  --accent-text: #8a4523;
+  --on-accent: #fffdf8;
+
+  --mark: #ffe6a3;
+  --code-bg: #f0ebdf;
+  --code-border: #e3ddd0;
+  --quote-bar: #d3c9b6;
+
+  --tok-keyword: #8c4a6b;
+  --tok-string: #4f7a3f;
+  --tok-number: #a3651a;
+  --tok-comment: #a2998a;
+  --tok-function: #37618a;
+  --tok-type: #916b1f;
+  --tok-property: #2c6f6a;
+  --tok-tag: #a04a3c;
+  --tok-operator: #766b5a;
+  --tok-constant: #3f6396;
+}
+
+:root[data-palette="github-light"] {
+  --bg-app: #f6f8fa;
+  --bg-page: #ffffff;
+  --bg-sunken: #eff2f5;
+  --bg-raised: #ffffff;
+
+  --border: #d1d9e0;
+  --border-strong: #b7c0c9;
+
+  --text: #1f2328;
+  --text-muted: #59636e;
+  --text-faint: #6e7781;
+
+  --accent: #0969da;
+  --accent-hover: #0860ca;
+  --accent-soft: rgba(9, 105, 218, 0.1);
+  --accent-text: #0550ae;
+  --on-accent: #ffffff;
+
+  --mark: #fff8c5;
+  --code-bg: #f6f8fa;
+  --code-border: #d1d9e0;
+  --quote-bar: #d1d9e0;
+
+  --tok-keyword: #cf222e;
+  --tok-string: #0a3069;
+  --tok-number: #0550ae;
+  --tok-comment: #6e7781;
+  --tok-function: #8250df;
+  --tok-type: #953800;
+  --tok-property: #0550ae;
+  --tok-tag: #116329;
+  --tok-operator: #0550ae;
+  --tok-constant: #0550ae;
+}
+
+:root[data-palette="solarized-light"] {
+  --bg-app: #eee8d5;
+  --bg-page: #fdf6e3;
+  --bg-sunken: #e6dfc8;
+  --bg-raised: #fdf6e3;
+
+  --border: #ded7c0;
+  --border-strong: #c6bfa8;
+  --hover: rgba(0, 43, 54, 0.055);
+  --active: rgba(0, 43, 54, 0.095);
+
+  --text: #073642;
+  --text-muted: #556e76;
+  --text-faint: #6e8180;
+
+  --accent: #268bd2;
+  --accent-hover: #1f7ab8;
+  --accent-soft: rgba(38, 139, 210, 0.14);
+  --accent-text: #1c6fa8;
+  --on-accent: #fdf6e3;
+
+  --mark: rgba(181, 137, 0, 0.28);
+  --code-bg: #eee8d5;
+  --code-border: #ded7c0;
+  --quote-bar: #a8b3ab;
+
+  --tok-keyword: #859900;
+  --tok-string: #2aa198;
+  --tok-number: #d33682;
+  --tok-comment: #93a1a1;
+  --tok-function: #268bd2;
+  --tok-type: #b58900;
+  --tok-property: #268bd2;
+  --tok-tag: #dc322f;
+  --tok-operator: #657b83;
+  --tok-constant: #6c71c4;
+}
+
+:root[data-palette="snow"] {
+  --bg-app: #e5e9f0;
+  --bg-page: #eceff4;
+  --bg-sunken: #dbe0ea;
+  --bg-raised: #f7f9fc;
+
+  --border: #d2d8e3;
+  --border-strong: #bac2d1;
+
+  --text: #2e3440;
+  --text-muted: #4c566a;
+  --text-faint: #6a7385;
+
+  --accent: #5e81ac;
+  --accent-hover: #517299;
+  --accent-soft: rgba(94, 129, 172, 0.15);
+  --accent-text: #4c6f96;
+  --on-accent: #eceff4;
+
+  --mark: rgba(235, 203, 139, 0.5);
+  --code-bg: #e1e6ef;
+  --code-border: #d2d8e3;
+  --quote-bar: #b9c1cf;
+
+  --tok-keyword: #5e81ac;
+  --tok-string: #6b8f5e;
+  --tok-number: #9c6b96;
+  --tok-comment: #8b93a3;
+  --tok-function: #4a7b8c;
+  --tok-type: #8a6d3b;
+  --tok-property: #5e81ac;
+  --tok-tag: #a35b62;
+  --tok-operator: #5e81ac;
+  --tok-constant: #b06a4b;
+}
+
+/* --- Dark ----------------------------------------------------------------- */
+
+:root[data-palette="midnight"] {
+  --bg-app: #0b1020;
+  --bg-page: #10162a;
+  --bg-sunken: #070b16;
+  --bg-raised: #18203a;
+
+  --border: #1f2740;
+  --border-strong: #2e3858;
+
+  --text: #ccd4e8;
+  --text-muted: #8590ad;
+  --text-faint: #616c8a;
+
+  --accent: #8ea5ff;
+  --accent-hover: #a2b5ff;
+  --accent-soft: rgba(142, 165, 255, 0.16);
+  --accent-text: #a7b8ff;
+  --on-accent: #0b1020;
+
+  --mark: rgba(255, 214, 102, 0.24);
+  --code-bg: #0a0f1e;
+  --code-border: #1f2740;
+  --quote-bar: #354060;
+
+  --tok-keyword: #c4a2ff;
+  --tok-string: #8fd6a8;
+  --tok-number: #ffb27d;
+  --tok-comment: #5d688a;
+  --tok-function: #8ea5ff;
+  --tok-type: #ffd08a;
+  --tok-property: #7fd4e8;
+  --tok-tag: #ff8ba7;
+  --tok-operator: #9aa6c4;
+  --tok-constant: #79b8ff;
+}
+
+:root[data-palette="nord"] {
+  --bg-app: #2e3440;
+  --bg-page: #333a47;
+  --bg-sunken: #272c36;
+  --bg-raised: #3b4252;
+
+  --border: #3b4252;
+  --border-strong: #4c566a;
+
+  --text: #d8dee9;
+  --text-muted: #9aa5b8;
+  --text-faint: #78839a;
+
+  --accent: #88c0d0;
+  --accent-hover: #99d1e0;
+  --accent-soft: rgba(136, 192, 208, 0.16);
+  --accent-text: #8fbcbb;
+  --on-accent: #2e3440;
+
+  --mark: rgba(235, 203, 139, 0.26);
+  --code-bg: #2b313c;
+  --code-border: #3b4252;
+  --quote-bar: #4c566a;
+
+  --tok-keyword: #81a1c1;
+  --tok-string: #a3be8c;
+  --tok-number: #b48ead;
+  --tok-comment: #616e88;
+  --tok-function: #88c0d0;
+  --tok-type: #8fbcbb;
+  --tok-property: #81a1c1;
+  --tok-tag: #bf616a;
+  --tok-operator: #81a1c1;
+  --tok-constant: #d08770;
+}
+
+:root[data-palette="dracula"] {
+  --bg-app: #21222c;
+  --bg-page: #282a36;
+  --bg-sunken: #191a21;
+  --bg-raised: #343746;
+
+  --border: #343746;
+  --border-strong: #44475a;
+
+  --text: #f8f8f2;
+  --text-muted: #9aa0c0;
+  --text-faint: #6272a4;
+
+  --accent: #bd93f9;
+  --accent-hover: #cba6ff;
+  --accent-soft: rgba(189, 147, 249, 0.18);
+  --accent-text: #cfa9ff;
+  --on-accent: #282a36;
+
+  --mark: rgba(241, 250, 140, 0.24);
+  --code-bg: #21222c;
+  --code-border: #343746;
+  --quote-bar: #44475a;
+
+  --tok-keyword: #ff79c6;
+  --tok-string: #f1fa8c;
+  --tok-number: #bd93f9;
+  --tok-comment: #6272a4;
+  --tok-function: #50fa7b;
+  --tok-type: #8be9fd;
+  --tok-property: #8be9fd;
+  --tok-tag: #ff79c6;
+  --tok-operator: #ff79c6;
+  --tok-constant: #bd93f9;
+}
+
+:root[data-palette="gruvbox"] {
+  --bg-app: #282828;
+  --bg-page: #32302f;
+  --bg-sunken: #1d2021;
+  --bg-raised: #3c3836;
+
+  --border: #3c3836;
+  --border-strong: #504945;
+
+  --text: #ebdbb2;
+  --text-muted: #bdae93;
+  --text-faint: #928374;
+
+  --accent: #fabd2f;
+  --accent-hover: #ffd15c;
+  --accent-soft: rgba(250, 189, 47, 0.16);
+  --accent-text: #fabd2f;
+  --on-accent: #282828;
+
+  --mark: rgba(250, 189, 47, 0.24);
+  --code-bg: #282828;
+  --code-border: #3c3836;
+  --quote-bar: #504945;
+
+  --tok-keyword: #fb4934;
+  --tok-string: #b8bb26;
+  --tok-number: #d3869b;
+  --tok-comment: #928374;
+  --tok-function: #b8bb26;
+  --tok-type: #fabd2f;
+  --tok-property: #83a598;
+  --tok-tag: #fb4934;
+  --tok-operator: #8ec07c;
+  --tok-constant: #d3869b;
+}
+
+:root[data-palette="solarized-dark"] {
+  --bg-app: #073642;
+  --bg-page: #002b36;
+  --bg-sunken: #00212b;
+  --bg-raised: #0a3f4c;
+
+  --border: #0f4a58;
+  --border-strong: #175a6a;
+
+  --text: #93a1a1;
+  --text-muted: #93a1a1;
+  --text-faint: #7a8f8f;
+
+  --accent: #268bd2;
+  --accent-hover: #3a9be0;
+  --accent-soft: rgba(38, 139, 210, 0.2);
+  --accent-text: #58a6d8;
+  --on-accent: #002b36;
+
+  --mark: rgba(181, 137, 0, 0.3);
+  --code-bg: #04303c;
+  --code-border: #0f4a58;
+  --quote-bar: #175a6a;
+
+  --tok-keyword: #859900;
+  --tok-string: #2aa198;
+  --tok-number: #d33682;
+  --tok-comment: #586e75;
+  --tok-function: #268bd2;
+  --tok-type: #b58900;
+  --tok-property: #268bd2;
+  --tok-tag: #dc322f;
+  --tok-operator: #839496;
+  --tok-constant: #6c71c4;
+}

@@ -1,0 +1,9 @@
+# Store text with LF; check out with the platform's native endings.
+* text=auto eol=lf
+
+*.png  binary
+*.jpg  binary
+*.ico  binary
+*.icns binary
+*.woff  binary
+*.woff2 binary
