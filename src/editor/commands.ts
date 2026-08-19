@@ -1,6 +1,8 @@
 import { indentLess, indentMore } from "@codemirror/commands";
+import { readText } from "@tauri-apps/plugin-clipboard-manager";
 import { EditorSelection, type ChangeSpec } from "@codemirror/state";
 import { EditorView, type Command } from "@codemirror/view";
+import { applyTableEdit, tableAt } from "./tableEdit";
 
 const WORD = /[\w'’À-ɏ-]/;
 
@@ -371,6 +373,36 @@ export const pasteLinkHandler = EditorView.domEventHandlers({
   },
 });
 
+/** Pastes the clipboard with all Markdown formatting removed. */
+export const pastePlainText: Command = (view) => {
+  void (async () => {
+    try {
+      const raw = await readText();
+      if (!raw) return;
+      const { stripMarkdown } = await import("../lib/export");
+      const text = stripMarkdown(raw);
+      const range = view.state.selection.main;
+      view.dispatch({
+        changes: { from: range.from, to: range.to, insert: text },
+        selection: { anchor: range.from + text.length },
+        userEvent: "input.paste",
+      });
+      view.focus();
+    } catch {
+      /* clipboard unavailable */
+    }
+  })();
+  return true;
+};
+
+/** Re-aligns the pipes of the table under the caret. */
+export const formatTable: Command = (view) => {
+  const target = tableAt(view, view.state.selection.main.head);
+  if (!target) return false;
+  applyTableEdit(view, target, (m) => m);
+  return true;
+};
+
 export const editorActions: Record<string, Command> = {
   bold: toggleWrap("**"),
   italic: toggleWrap("*"),
@@ -393,6 +425,8 @@ export const editorActions: Record<string, Command> = {
   table: insertTable,
   "code-block": insertCodeBlock,
   hr: insertHorizontalRule,
+  "format-table": formatTable,
+  "paste-plain": pastePlainText,
 };
 
 export function runEditorAction(view: EditorView | null, id: string): boolean {

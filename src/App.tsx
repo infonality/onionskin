@@ -72,7 +72,7 @@ export default function App() {
 
   const viewRef = useRef<EditorView | null>(null);
   const [, forceRender] = useState(0);
-  const [stats, setStats] = useState<CaretStats>({ line: 1, column: 1, selected: 0 });
+  const [stats, setStats] = useState<CaretStats>({ line: 1, column: 1, selected: 0, selectedWords: 0 });
   const [printFragment, setPrintFragment] = useState<string | null>(null);
 
   useTheme();
@@ -173,6 +173,23 @@ export default function App() {
     window.addEventListener("contextmenu", onContextMenu);
     return () => window.removeEventListener("contextmenu", onContextMenu);
   }, []);
+
+  // --- auto-save ------------------------------------------------------------
+  // `docs` gets a new identity on every keystroke, so this debounces to 1.5s
+  // after typing stops. Untitled documents are skipped — they need a dialog.
+  const autoSave = useStore((s) => s.settings.autoSave);
+  useEffect(() => {
+    if (!autoSave) return;
+    const id = window.setTimeout(() => void actions.saveDirtyToDisk(), 1500);
+    return () => window.clearTimeout(id);
+  }, [autoSave, docs]);
+
+  useEffect(() => {
+    if (!autoSave) return;
+    const flush = () => void actions.saveDirtyToDisk();
+    window.addEventListener("blur", flush);
+    return () => window.removeEventListener("blur", flush);
+  }, [autoSave]);
 
   // --- external edits -------------------------------------------------------
   useEffect(() => {

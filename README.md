@@ -48,7 +48,8 @@ instead, which is where spelling suggestions live.
 - Tabs with dirty indicators, drag-to-reorder, and per-tab undo history
 - Sidebar with a lazy file tree (create / rename / move-to-trash / reveal),
   a live document outline, and full-text search across the folder
-- Command palette (`Ctrl+Shift+P`) and quick file open (`Ctrl+K`)
+- Command palette (`Ctrl+Shift+P`) and quick file open (`Ctrl+K`), which lists
+  open tabs, then recently opened files, then everything in the folder
 - Focus mode, typewriter mode, adjustable text size, line width and typeface
 
 **Themes**
@@ -75,7 +76,10 @@ and the caret clears the 3:1 threshold for UI elements on all of them.
 - Windows line endings are detected on open and restored on save
 - External edits are detected when the window regains focus, with a
   keep-mine / reload prompt when the buffer is dirty
-- Session (open files, folder, settings) is restored on next launch
+- Auto-save 1.5s after you stop typing (and when the window loses focus) for
+  files that already exist on disk; new documents still prompt. Toggle in
+  Settings → Writing
+- Session (open files, folder, recent files, settings) is restored on next launch
 - Export to a self-contained HTML file, or print / save as PDF
 
 ## Requirements
@@ -124,6 +128,7 @@ Other scripts:
 | `Ctrl+Shift+P` / `Ctrl+K` | Command palette / quick open |
 | `Ctrl+F` / `Ctrl+Alt+F` | Find / find and replace |
 | `Ctrl+B` `Ctrl+I` `Ctrl+E` `Ctrl+L` | Bold, italic, inline code, link |
+| `Ctrl+Shift+V` | Paste as plain text |
 | `Ctrl+1`…`6` / `Ctrl+0` | Heading level / paragraph |
 | `Ctrl+Shift+8/9/0` | Bulleted / numbered / task list |
 | `Ctrl+/` | Source mode |

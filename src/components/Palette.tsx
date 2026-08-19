@@ -1,7 +1,7 @@
 import { CornerDownLeft, FileText, Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { scanMarkdownFiles, type FsEntry } from "../lib/ipc";
-import { dirname, prettyPath } from "../lib/path";
+import { basename, dirname, prettyPath } from "../lib/path";
 import { openPath } from "../state/actions";
 import { prettyKeys, type AppCommand } from "../state/commands";
 import { useStore } from "../state/store";
@@ -43,6 +43,7 @@ export function Palette({ commands }: { commands: AppCommand[] }) {
   const quickOpen = useStore((s) => s.quickOpen);
   const folder = useStore((s) => s.folder);
   const docs = useStore((s) => s.docs);
+  const recentFiles = useStore((s) => s.recentFiles);
   const home = useStore((s) => s.home);
   const setPalette = useStore((s) => s.setPalette);
   const setQuickOpen = useStore((s) => s.setQuickOpen);
@@ -88,8 +89,20 @@ export function Palette({ commands }: { commands: AppCommand[] }) {
           run: () => useStore.getState().setActive(d.id),
         }));
 
+      const isOpen = (path: string) => docs.some((d) => d.path === path);
+
+      const recentItems: Item[] = recentFiles
+        .filter((path) => !isOpen(path))
+        .map((path) => ({
+          key: `recent:${path}`,
+          title: basename(path),
+          subtitle: "Recent",
+          run: () => void openPath(path),
+        }));
+
+      const listed = new Set(recentFiles);
       const fileItems: Item[] = files
-        .filter((f) => !docs.some((d) => d.path === f.path))
+        .filter((f) => !isOpen(f.path) && !listed.has(f.path))
         .map((f) => ({
           key: f.path,
           title: f.name,
@@ -97,7 +110,7 @@ export function Palette({ commands }: { commands: AppCommand[] }) {
           run: () => void openPath(f.path),
         }));
 
-      return [...openDocs, ...fileItems];
+      return [...openDocs, ...recentItems, ...fileItems];
     }
 
     return commands.map((c) => ({
@@ -107,7 +120,7 @@ export function Palette({ commands }: { commands: AppCommand[] }) {
       keys: c.keys,
       run: () => void c.run(),
     }));
-  }, [quickOpen, commands, docs, files, home]);
+  }, [quickOpen, commands, docs, files, home, recentFiles]);
 
   const filtered = useMemo(() => {
     const q = query.trim();
@@ -176,7 +189,9 @@ export function Palette({ commands }: { commands: AppCommand[] }) {
         <div className="palette-list" ref={listRef}>
           {filtered.length === 0 ? (
             <div className="palette-empty">
-              {quickOpen && !folder ? "Open a folder to search files." : "No matches."}
+              {quickOpen && !folder && !recentFiles.length
+                ? "Nothing recent yet — open a file or folder."
+                : "No matches."}
             </div>
           ) : null}
           {filtered.map((item, i) => (

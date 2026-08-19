@@ -21,7 +21,9 @@ import {
   listIndent,
   listOutdent,
   pasteLinkHandler,
+  pastePlainText,
 } from "./commands";
+import { countWords } from "../lib/text";
 import { codeHighlighting } from "./highlight";
 import { docPathFacet, livePreview, sourceModeFacet } from "./livePreview";
 import { editorModes, focusModeFacet, typewriterFacet } from "./modes";
@@ -36,7 +38,10 @@ export interface EditorSettings {
 export interface CaretStats {
   line: number;
   column: number;
+  /** Characters covered by the selection. */
   selected: number;
+  /** Words covered by the selection. */
+  selectedWords: number;
 }
 
 interface EditorProps {
@@ -143,6 +148,7 @@ export function Editor(props: EditorProps) {
           { key: "Mod-Shift-9", run: editorActions["list-ordered"] },
           { key: "Mod-Shift-0", run: editorActions["list-task"] },
           { key: "Mod-Enter", run: editorActions["toggle-task"] },
+          { key: "Mod-Shift-v", run: pastePlainText },
           { key: "Mod-1", run: editorActions.h1 },
           { key: "Mod-2", run: editorActions.h2 },
           { key: "Mod-3", run: editorActions.h3 },
@@ -163,13 +169,23 @@ export function Editor(props: EditorProps) {
         if (update.docChanged || update.selectionSet) {
           const range = update.state.selection.main;
           const line = update.state.doc.lineAt(range.head);
+          const selected = update.state.selection.ranges.reduce(
+            (sum, r) => sum + (r.to - r.from),
+            0,
+          );
           handlers.current.onStats({
             line: line.number,
             column: range.head - line.from + 1,
-            selected: update.state.selection.ranges.reduce(
-              (sum, r) => sum + (r.to - r.from),
-              0,
-            ),
+            selected,
+            // Counting is cheap, but not worth doing for a whole huge document.
+            selectedWords:
+              selected > 0 && selected < 200_000
+                ? countWords(
+                    update.state.selection.ranges
+                      .map((r) => update.state.sliceDoc(r.from, r.to))
+                      .join(" "),
+                  )
+                : 0,
           });
         }
       }),

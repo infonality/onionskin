@@ -31,6 +31,7 @@ export interface Settings {
   focusMode: boolean;
   typewriter: boolean;
   spellcheck: boolean;
+  autoSave: boolean;
   sidebarVisible: boolean;
   sidebarTab: SidebarTab;
   sidebarWidth: number;
@@ -48,6 +49,7 @@ export const defaultSettings: Settings = {
   focusMode: false,
   typewriter: false,
   spellcheck: true,
+  autoSave: true,
   sidebarVisible: true,
   sidebarTab: "files",
   sidebarWidth: 264,
@@ -68,6 +70,7 @@ interface AppState {
   activeId: string | null;
   folder: string | null;
   recentFolders: string[];
+  recentFiles: string[];
   home: string;
   platform: string;
   settings: Settings;
@@ -91,12 +94,14 @@ interface AppState {
   markSaved: (id: string, path: string, modified: number) => void;
 
   setFolder: (folder: string | null) => void;
+  noteRecentFile: (path: string) => void;
   setEnvironment: (env: { home: string; platform: string }) => void;
   patchSettings: (patch: Partial<Settings>) => void;
   hydrate: (state: {
     settings?: Partial<Settings>;
     folder?: string | null;
     recentFolders?: string[];
+    recentFiles?: string[];
   }) => void;
 
   pushToast: (message: string, tone?: Toast["tone"]) => void;
@@ -116,6 +121,7 @@ export const useStore = create<AppState>((set, get) => ({
   activeId: null,
   folder: null,
   recentFolders: [],
+  recentFiles: [],
   home: "",
   platform: "windows",
   settings: defaultSettings,
@@ -204,6 +210,11 @@ export const useStore = create<AppState>((set, get) => ({
         : state.recentFolders,
     })),
 
+  noteRecentFile: (path) =>
+    set((state) => ({
+      recentFiles: [path, ...state.recentFiles.filter((p) => p !== path)].slice(0, 15),
+    })),
+
   setEnvironment: (env) => set(env),
 
   patchSettings: (patch) =>
@@ -214,6 +225,7 @@ export const useStore = create<AppState>((set, get) => ({
       settings: { ...state.settings, ...(incoming.settings ?? {}) },
       folder: incoming.folder ?? state.folder,
       recentFolders: incoming.recentFolders ?? state.recentFolders,
+      recentFiles: incoming.recentFiles ?? state.recentFiles,
     })),
 
   pushToast: (message, tone = "info") =>

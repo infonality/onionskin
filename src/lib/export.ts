@@ -18,6 +18,13 @@ export function renderDocumentFragment(source: string, docPath: string | null): 
   return holder.innerHTML;
 }
 
+/** Renders markdown and returns just its text, for "paste as plain text". */
+export function stripMarkdown(source: string): string {
+  const holder = document.createElement("div");
+  holder.innerHTML = renderDocumentFragment(source, null);
+  return (holder.textContent ?? "").replace(/\n{3,}/g, "\n\n").trim();
+}
+
 const DOCUMENT_CSS = `
 :root {
   --ink: #24292f;

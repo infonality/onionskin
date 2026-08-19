@@ -23,6 +23,7 @@ export async function openPath(path: string) {
   const existing = state.docs.find((d) => d.path === path);
   if (existing) {
     state.setActive(existing.id);
+    state.noteRecentFile(path);
     return existing.id;
   }
 
@@ -37,6 +38,8 @@ export async function openPath(path: string) {
       lineEnding: doc.lineEnding,
       diskModified: doc.modified,
     });
+    state.noteRecentFile(doc.path);
+    schedulePersist();
     return doc.path;
   } catch (error) {
     fail(error);
@@ -101,6 +104,7 @@ export async function saveDoc(id: string, opts: { saveAs?: boolean } = {}): Prom
   try {
     const modified = await ipc.writeDocument(target, doc.text, doc.lineEnding);
     useStore.getState().markSaved(id, target, modified);
+    useStore.getState().noteRecentFile(target);
     return true;
   } catch (error) {
     fail(error);
@@ -112,6 +116,13 @@ export async function saveActive(opts: { saveAs?: boolean } = {}) {
   const id = useStore.getState().activeId;
   if (!id) return false;
   return saveDoc(id, opts);
+}
+
+/** Saves every dirty document that already lives on disk. Used by auto-save. */
+export async function saveDirtyToDisk() {
+  for (const doc of useStore.getState().docs) {
+    if (doc.path && doc.text !== doc.savedText) await saveDoc(doc.id);
+  }
 }
 
 export async function saveAll() {
@@ -365,6 +376,7 @@ export async function persistPrefs(immediate = false) {
       settings: state.settings,
       folder: state.folder,
       recentFolders: state.recentFolders,
+      recentFiles: state.recentFiles,
       openFiles: state.docs.map((d) => d.path).filter((p): p is string => !!p),
       activeFile: state.activeDoc()?.path ?? null,
     });
@@ -428,6 +440,7 @@ export async function bootstrap() {
       settings?: Record<string, unknown>;
       folder?: string | null;
       recentFolders?: string[];
+      recentFiles?: string[];
       openFiles?: string[];
       activeFile?: string | null;
     };
@@ -436,6 +449,7 @@ export async function bootstrap() {
       settings: prefs.settings as never,
       folder: prefs.folder ?? null,
       recentFolders: prefs.recentFolders ?? [],
+      recentFiles: prefs.recentFiles ?? [],
     });
 
     let opened = 0;

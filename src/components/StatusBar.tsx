@@ -2,24 +2,10 @@ import { Code2, Crosshair, Settings as SettingsIcon, Type } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { CaretStats } from "../editor/Editor";
 import { prettyPath } from "../lib/path";
+import { countWords } from "../lib/text";
 import { schedulePersist } from "../state/actions";
 import { prettyKeys } from "../state/commands";
 import { useStore } from "../state/store";
-
-/** Counts words the way writers expect: CJK glyphs count individually. */
-export function countWords(text: string): number {
-  const stripped = text
-    .replace(/```[\s\S]*?```/g, " ")
-    .replace(/`[^`]*`/g, " ")
-    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1");
-
-  const cjk = stripped.match(/[぀-ヿ㐀-䶿一-鿿豈-﫿]/g);
-  const latin = stripped
-    .replace(/[぀-ヿ㐀-䶿一-鿿豈-﫿]/g, " ")
-    .match(/[A-Za-z0-9À-ÿЀ-ӿ'’-]+/g);
-
-  return (cjk?.length ?? 0) + (latin?.length ?? 0);
-}
 
 export function StatusBar({ stats }: { stats: CaretStats }) {
   const doc = useStore((s) => s.activeDoc());
@@ -53,7 +39,10 @@ export function StatusBar({ stats }: { stats: CaretStats }) {
 
       <div className="status-right">
         {stats.selected > 0 ? (
-          <span className="status-item">{stats.selected} selected</span>
+          <span className="status-item">
+            {stats.selectedWords.toLocaleString()} words, {stats.selected.toLocaleString()} chars
+            selected
+          </span>
         ) : null}
         <span className="status-item">
           Ln {stats.line}, Col {stats.column}

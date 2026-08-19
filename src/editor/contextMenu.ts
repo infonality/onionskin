@@ -6,7 +6,7 @@ import { readText, writeHtml, writeText } from "@tauri-apps/plugin-clipboard-man
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import type { MenuNode } from "../components/ContextMenu";
-import { renderDocumentFragment } from "../lib/export";
+import { renderDocumentFragment, stripMarkdown } from "../lib/export";
 import { revealEntry } from "../lib/ipc";
 import { resolveResource } from "../lib/markdown";
 import { dirname, isAbsolute, join, relative } from "../lib/path";
@@ -21,7 +21,7 @@ import {
 } from "../lib/table";
 import { followLink } from "../state/actions";
 import { useStore } from "../state/store";
-import { editorActions, insertImage } from "./commands";
+import { editorActions, insertImage, pastePlainText } from "./commands";
 import { applyTableEdit, tableAt } from "./tableEdit";
 
 function toast(message: string, tone: "info" | "error" = "info") {
@@ -55,12 +55,6 @@ function operativeRange(view: EditorView) {
   if (!range.empty) return { from: range.from, to: range.to, wholeLine: false };
   const line = doc.lineAt(range.head);
   return { from: line.from, to: Math.min(line.to + 1, doc.length), wholeLine: true };
-}
-
-function stripMarkdown(source: string): string {
-  const holder = document.createElement("div");
-  holder.innerHTML = renderDocumentFragment(source, null);
-  return (holder.textContent ?? "").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 function insertAtSelection(view: EditorView, text: string) {
@@ -295,6 +289,11 @@ export function buildEditorMenu(
         },
         "-",
         {
+          label: "Format Table",
+          run: () => applyTableEdit(view, table, (m) => m),
+        },
+        "-",
+        {
           label: "Delete Row",
           danger: true,
           disabled: table.row === 0 || table.model.rows.length <= 2,
@@ -429,11 +428,10 @@ export function buildEditorMenu(
         },
         {
           label: "As Plain Text",
-          run: () =>
-            void guard(async () => {
-              const text = (await readText()) ?? "";
-              if (text) insertAtSelection(view, stripMarkdown(text));
-            }, "Could not read the clipboard."),
+          keys: "Mod+Shift+V",
+          run: () => {
+            pastePlainText(view);
+          },
         },
       ],
     },

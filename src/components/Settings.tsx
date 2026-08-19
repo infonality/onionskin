@@ -258,6 +258,9 @@ export function SettingsSheet() {
         <Row label="Typewriter mode" hint="Keep the caret near the middle of the window.">
           <Toggle on={settings.typewriter} onChange={(v) => update({ typewriter: v })} />
         </Row>
+        <Row label="Auto-save" hint="Saves 1.5s after you stop typing. New files still prompt.">
+          <Toggle on={settings.autoSave} onChange={(v) => update({ autoSave: v })} />
+        </Row>
         <Row label="Check spelling">
           <Toggle on={settings.spellcheck} onChange={(v) => update({ spellcheck: v })} />
         </Row>
