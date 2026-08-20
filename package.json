@@ -1,7 +1,7 @@
 {
   "name": "onionskin",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "A clean, modern, cross-platform Markdown editor with seamless live preview.",
   "scripts": {

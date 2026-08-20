@@ -88,7 +88,11 @@ writeFileSync(join(here, "palettes.css"), palettes);
 
 // --- assemble ---------------------------------------------------------------
 
-let page = read(join(here, "src/page.html"));
+const { version } = JSON.parse(read(join(repo, "package.json")));
+
+// The page states the version and the installer filename in several places.
+// Both come from package.json so they cannot drift apart.
+let page = read(join(here, "src/page.html")).replaceAll("{{VERSION}}", version);
 page = page.replace("<!-- PALETTES -->", `<style>\n${palettes}</style>`);
 
 const shots = new Map();
@@ -111,7 +115,7 @@ writeFileSync(
   join(here, "artifact.html"),
   inlined
     .replace(
-      '<a class="btn" href="Onionskin_0.1.0_x64_en-US.msi" download\n            >Windows installer <span class="size">3.4 MB</span></a\n          >',
+      '<a class="btn" href="Onionskin_' + version + '_x64_en-US.msi" download\n            >Windows installer <span class="size">3.4 MB</span></a\n          >',
       `<a class="btn" href="${RELEASES}" target="_blank" rel="noreferrer"\n            >Get the Windows installer <span class="size">3.4 MB</span></a\n          >`,
     )
     .replace(
