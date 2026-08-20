@@ -58,16 +58,15 @@ const check = (ok, message) => {
   return ok;
 };
 
+// Compared against the tag rather than package.json: this runs from the
+// workflow's own checkout, which is not the tag when a release is backfilled
+// by hand. The manifest version comes from tauri.conf.json, so a config left
+// un-bumped still shows up here as a mismatch.
 const expectedVersion = tag.startsWith("v") ? tag.slice(1) : tag;
-const pkgVersion = JSON.parse(readFileSync(join(repo, "package.json"), "utf8")).version;
 
 check(
   manifest.version === expectedVersion,
   `manifest version is ${manifest.version}, tag says ${expectedVersion}`,
-);
-check(
-  pkgVersion === expectedVersion,
-  `package.json version is ${pkgVersion}, tag says ${expectedVersion}`,
 );
 
 /** Pulls the filename out of a minisign signature's trusted comment. */

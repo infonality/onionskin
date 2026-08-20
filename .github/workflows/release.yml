@@ -80,7 +80,7 @@ jobs:
           fi
           echo "Signing key present."
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ env.TAG }}
 
@@ -100,9 +100,9 @@ jobs:
             curl \
             wget
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - uses: dtolnay/rust-toolchain@stable
@@ -134,13 +134,14 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ env.TAG }}
+      # Deliberately not `ref: env.TAG`. This job only needs the verification
+      # script, and an older tag being backfilled predates it. The workflow's
+      # own checkout always has the version that goes with this workflow.
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
 
       # Each build job merges its own platform into latest.json independently,
       # so a complete manifest is an assumption rather than a guarantee. Prove
