@@ -4,6 +4,7 @@
   "version": "0.2.0",
   "type": "module",
   "description": "A clean, modern, cross-platform Markdown editor with seamless live preview.",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

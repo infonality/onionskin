@@ -148,8 +148,9 @@ https://github.com/infonality/onionskin/releases/latest/download/latest.json
 
 Two consequences worth knowing:
 
-- **The repository has to be reachable by the installed app.** While it is
-  private, that URL returns 404 and every check fails silently.
+- **A published release has to exist.** That URL resolves to the newest
+  release's attached `latest.json`. With no release yet — or on a private
+  repository — it returns 404 and every check fails silently.
 - **Bump the version in both `package.json` and `src-tauri/tauri.conf.json`.**
   `npm run release` refuses to run if they disagree, because a manifest whose
   version matches the installed one would leave clients in a loop.
@@ -224,3 +225,23 @@ in-app menu); macOS keeps its native traffic lights and a real menu bar via
   open notes from one folder.
 - Exported HTML embeds the KaTeX stylesheet but not its font files, so math in
   exported documents falls back to system fonts.
+
+## License
+
+Onionskin is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version. The full text is in [LICENSE](LICENSE).
+
+It is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE.
+
+In practice that means you may use, study, modify and share it freely, and a
+fork you distribute has to carry the same freedoms and ship its source.
+
+Bundled dependencies keep their own licenses: CodeMirror, React, KaTeX,
+marked and Zustand are MIT; Lucide is ISC; DOMPurify is MPL-2.0 or
+Apache-2.0; Tauri is MIT or Apache-2.0. All of those are compatible with
+GPLv3 — which is part of why the license is v3-or-later and not v2 — and
+each keeps its own notice inside `node_modules`.
