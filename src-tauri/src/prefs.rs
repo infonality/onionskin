@@ -21,7 +21,10 @@ pub fn load_prefs(app: AppHandle) -> Value {
     };
     fs::read_to_string(path)
         .ok()
-        .and_then(|s| serde_json::from_str::<Value>(&s).ok())
+        // A file hand-edited in a Windows editor starts with a BOM, which
+        // serde_json refuses to parse. Silently losing every setting over
+        // three bytes would be a nasty surprise.
+        .and_then(|s| serde_json::from_str::<Value>(s.trim_start_matches('\u{feff}')).ok())
         .unwrap_or_else(|| json!({}))
 }
 

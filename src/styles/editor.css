@@ -343,6 +343,13 @@
   color: var(--tok-property);
 }
 
+.cm-md-yaml {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
+.cm-md-yaml.cm-md-heading { font-family: var(--font-mono); font-weight: 400; }
+
 .cm-md-frontmatter {
   display: flex;
   flex-wrap: wrap;

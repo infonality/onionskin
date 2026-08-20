@@ -332,6 +332,11 @@ function buildInlineDecorations(view: EditorView) {
   const codeRanges: Array<[number, number]> = [];
   const tree = syntaxTree(state);
 
+  // Front matter is YAML, not Markdown. Left alone, CommonMark reads the block
+  // as a Setext heading (text followed by `---`) and renders the whole thing
+  // enormous the moment the caret lands inside it.
+  const front = frontMatterRange(state);
+
   const sliceOf = (from: number, to: number) => doc.sliceString(from, to);
 
   for (const { from: vFrom, to: vTo } of view.visibleRanges) {
@@ -341,6 +346,7 @@ function buildInlineDecorations(view: EditorView) {
       from: vFrom,
       to: vTo,
       enter(node) {
+        if (front && node.from >= front.from && node.to <= front.to) return false;
         const name = node.name;
 
         // ---- headings -----------------------------------------------------
@@ -592,6 +598,12 @@ function buildInlineDecorations(view: EditorView) {
     b.setViewport(vFrom, vTo);
     const firstLine = doc.lineAt(vFrom).number;
     const lastLine = doc.lineAt(vTo).number;
+
+    if (front) {
+      const a = Math.max(doc.lineAt(front.from).number, firstLine);
+      const z = Math.min(doc.lineAt(front.to).number, lastLine);
+      for (let n = a; n <= z; n++) b.singleLineClass(doc.line(n).from, "cm-md-yaml");
+    }
 
     for (let n = firstLine; n <= lastLine; n++) {
       const line = doc.line(n);
