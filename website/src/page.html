@@ -325,15 +325,23 @@
 
   /* Syntax markers: present in the DOM always, revealed only on the line
      the caret is on — exactly the editor's behaviour. */
+  /* Hidden markers collapse to nothing. opacity alone would keep their space
+     and leave phantom gaps mid-sentence, which is not what the editor does. */
   .syn {
+    display: inline-block;
+    width: 0;
+    overflow: hidden;
+    white-space: pre;
+    vertical-align: baseline;
     font-family: var(--mono);
     font-size: 0.82em;
     color: var(--text-faint);
     opacity: 0;
-    transition: opacity 0.28s ease;
+    transition: opacity 0.22s ease;
   }
 
   .ln.is-live .syn {
+    width: auto;
     opacity: 1;
   }
 
@@ -383,13 +391,16 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1em;
-    height: 1em;
-    margin-right: 0.35ch;
-    vertical-align: -0.12em;
+    flex: none;
+    width: 1.02em;
+    height: 1.02em;
+    margin-right: 0.4ch;
+    /* `middle` aligns to baseline + half x-height, which lands the box on the
+       text's optical centre at any font size. A fixed em nudge sat 4px low. */
+    vertical-align: middle;
     border: 1.5px solid var(--border-strong);
     border-radius: 4px;
-    font-size: 0.85em;
+    line-height: 1;
   }
 
   .box.on {
@@ -400,15 +411,16 @@
 
   .box.on::after {
     content: "✓";
-    font-size: 0.72em;
+    font-size: 0.62em;
     line-height: 1;
   }
 
   .caret {
-    position: absolute;
-    top: 0.18em;
-    bottom: 0.18em;
+    display: inline-block;
     width: 2px;
+    height: 1.05em;
+    margin-left: 1px;
+    vertical-align: -0.2em;
     background: var(--accent);
     opacity: 0;
   }
@@ -786,28 +798,28 @@
         <div class="demo" id="demo">
           <div class="demo-bar">Product Spec.md</div>
           <div class="demo-body" id="demo-body">
-            <span class="ln h1" data-caret="18">
-              <span class="syn">#</span> Orbit<i class="caret"></i>
+            <span class="ln h1">
+              <span class="syn"># </span>Orbit<i class="caret"></i>
             </span>
             <span class="ln blank"></span>
-            <span class="ln" data-caret="30">
+            <span class="ln">
               A scheduling layer for <strong><span class="syn">**</span>small teams<span class="syn">**</span></strong
               >.<i class="caret"></i>
             </span>
             <span class="ln blank"></span>
-            <span class="ln h2" data-caret="24">
-              <span class="syn">##</span> Why now<i class="caret"></i>
+            <span class="ln h2">
+              <span class="syn">## </span>Why now<i class="caret"></i>
             </span>
             <span class="ln blank"></span>
-            <span class="ln" data-caret="34">
-              <span class="syn">- [x]</span><span class="box on"></span>Timeline view<i class="caret"></i>
+            <span class="ln">
+              <span class="syn">- </span><span class="box on"></span>Timeline view<i class="caret"></i>
             </span>
-            <span class="ln" data-caret="30">
-              <span class="syn">- [ ]</span><span class="box"></span>Slack digest<i class="caret"></i>
+            <span class="ln">
+              <span class="syn">- </span><span class="box"></span>Slack digest<i class="caret"></i>
             </span>
             <span class="ln blank"></span>
-            <span class="ln quote" data-caret="46">
-              <span class="syn">&gt;</span> The calendar tells you what was
+            <span class="ln quote">
+              <span class="syn">&gt; </span>The calendar tells you what was
               <span class="mark"><span class="syn">==</span>planned<span class="syn">==</span></span
               >.<i class="caret"></i>
             </span>
@@ -1143,8 +1155,6 @@
     function show(i) {
       lines.forEach(function (l, n) {
         l.classList.toggle("is-live", n === i);
-        var caret = l.querySelector(".caret");
-        if (caret) caret.style.left = l.dataset.caret ? l.dataset.caret + "%" : "100%";
       });
     }
 
