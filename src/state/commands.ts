@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { insertImage, runEditorAction } from "../editor/commands";
 import { dirname, relative } from "../lib/path";
 import { DARK_THEMES, LIGHT_THEMES, pickTheme, THEMES } from "../lib/themes";
+import { checkForUpdates } from "../lib/updates";
 import * as actions from "./actions";
 import { useStore, type Settings } from "./store";
 
@@ -96,7 +97,7 @@ export const MENU_MODEL: MenuSection[] = [
       "toggle-fullscreen",
     ],
   },
-  { label: "Help", items: ["shortcuts", "markdown-guide"] },
+  { label: "Help", items: ["check-updates", "-", "shortcuts", "markdown-guide"] },
 ];
 
 const isMac = () => document.documentElement.dataset.platform === "macos";
@@ -463,6 +464,12 @@ export function useAppCommands(ctx: CommandContext): AppCommand[] {
       },
 
       // --- Help ---
+      {
+        id: "check-updates",
+        label: "Check for Updates…",
+        group: "Help",
+        run: () => checkForUpdates({ silent: false }),
+      },
       {
         id: "shortcuts",
         label: "Keyboard Shortcuts",

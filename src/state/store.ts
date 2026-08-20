@@ -32,6 +32,7 @@ export interface Settings {
   typewriter: boolean;
   spellcheck: boolean;
   autoSave: boolean;
+  autoCheckUpdates: boolean;
   sidebarVisible: boolean;
   sidebarTab: SidebarTab;
   sidebarWidth: number;
@@ -50,6 +51,7 @@ export const defaultSettings: Settings = {
   typewriter: false,
   spellcheck: true,
   autoSave: true,
+  autoCheckUpdates: true,
   sidebarVisible: true,
   sidebarTab: "files",
   sidebarWidth: 264,
@@ -63,6 +65,8 @@ export interface Toast {
   id: number;
   message: string;
   tone: "info" | "error";
+  /** Sticky toasts stay until dismissed by whoever raised them. */
+  sticky?: boolean;
 }
 
 interface AppState {
@@ -104,7 +108,9 @@ interface AppState {
     recentFiles?: string[];
   }) => void;
 
-  pushToast: (message: string, tone?: Toast["tone"]) => void;
+  /** Returns the toast id so long-running work can update it in place. */
+  pushToast: (message: string, tone?: Toast["tone"], sticky?: boolean) => number;
+  updateToast: (id: number, patch: Partial<Omit<Toast, "id">>) => void;
   dismissToast: (id: number) => void;
 
   setPalette: (open: boolean) => void;
@@ -228,9 +234,17 @@ export const useStore = create<AppState>((set, get) => ({
       recentFiles: incoming.recentFiles ?? state.recentFiles,
     })),
 
-  pushToast: (message, tone = "info") =>
+  pushToast: (message, tone = "info", sticky = false) => {
+    const id = ++toastSeq;
     set((state) => ({
-      toasts: [...state.toasts, { id: ++toastSeq, message, tone }].slice(-4),
+      toasts: [...state.toasts, { id, message, tone, sticky }].slice(-4),
+    }));
+    return id;
+  },
+
+  updateToast: (id, patch) =>
+    set((state) => ({
+      toasts: state.toasts.map((t) => (t.id === id ? { ...t, ...patch } : t)),
     })),
 
   dismissToast: (id) =>

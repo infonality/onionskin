@@ -8,9 +8,9 @@ export function Toasts() {
 
   useEffect(() => {
     if (!toasts.length) return;
-    const timers = toasts.map((t) =>
-      window.setTimeout(() => dismiss(t.id), t.tone === "error" ? 7000 : 3200),
-    );
+    const timers = toasts
+      .filter((t) => !t.sticky)
+      .map((t) => window.setTimeout(() => dismiss(t.id), t.tone === "error" ? 7000 : 3200));
     return () => timers.forEach(window.clearTimeout);
   }, [toasts, dismiss]);
 

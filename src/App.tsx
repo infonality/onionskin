@@ -17,6 +17,7 @@ import { buildStandaloneHtml, renderDocumentFragment } from "./lib/export";
 import { dirname, extname, relative } from "./lib/path";
 import { buildTextFieldMenu } from "./lib/textFieldMenu";
 import { resolveTheme } from "./lib/themes";
+import { checkForUpdates } from "./lib/updates";
 import * as actions from "./state/actions";
 import { useAppCommands, type AppCommand } from "./state/commands";
 import { useStore } from "./state/store";
@@ -190,6 +191,16 @@ export default function App() {
     window.addEventListener("blur", flush);
     return () => window.removeEventListener("blur", flush);
   }, [autoSave]);
+
+  // --- updates --------------------------------------------------------------
+  // Deliberately late and deliberately quiet: a failed check on launch is not
+  // the user's problem, so it never surfaces.
+  const autoCheckUpdates = useStore((s) => s.settings.autoCheckUpdates);
+  useEffect(() => {
+    if (!autoCheckUpdates) return;
+    const id = window.setTimeout(() => void checkForUpdates({ silent: true }), 8000);
+    return () => window.clearTimeout(id);
+  }, [autoCheckUpdates]);
 
   // --- external edits -------------------------------------------------------
   useEffect(() => {

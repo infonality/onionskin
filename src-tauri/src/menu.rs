@@ -32,6 +32,8 @@ pub fn install(app: &AppHandle<Wry>) -> tauri::Result<()> {
     let app_menu = SubmenuBuilder::new(app, "Onionskin")
         .about(Some(about))
         .separator()
+        .item(&item!(app, "check-updates", "Check for Updates…"))
+        .separator()
         .item(&item!(app, "settings", "Settings…", "CmdOrCtrl+,"))
         .separator()
         .services()

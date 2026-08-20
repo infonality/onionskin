@@ -79,6 +79,8 @@ and the caret clears the 3:1 threshold for UI elements on all of them.
 - Auto-save 1.5s after you stop typing (and when the window loses focus) for
   files that already exist on disk; new documents still prompt. Toggle in
   Settings → Writing
+- Auto-update: checks after launch, asks before installing, and flushes
+  unsaved work first because the installer closes the app
 - Session (open files, folder, recent files, settings) is restored on next launch
 - Export to a self-contained HTML file, or print / save as PDF
 
@@ -116,6 +118,45 @@ Other scripts:
 | --- | --- |
 | `npm run dev` | Frontend only, in a normal browser (no file access) |
 | `npm run build` | Typecheck and build the frontend bundle |
+
+## Releasing
+
+Onionskin updates itself. The app checks for a new version shortly after
+launch, and never installs anything without asking.
+
+Updates are signed with a keypair that is **not** the same thing as a code
+signing certificate. The public half lives in `src-tauri/tauri.conf.json`; the
+private half must stay off the repository. Losing it means existing installs
+can never accept another update, so back it up somewhere durable.
+
+```bash
+export TAURI_SIGNING_PRIVATE_KEY="$(cat ~/.onionskin/updater.key)"
+npm run app:build
+npm run release
+```
+
+Tauri reads the key *contents* from that variable. The `TAURI_SIGNING_PRIVATE_KEY_PATH`
+variant is not honoured by the bundler, and the build will quietly produce
+installers with no signatures — which the updater then refuses.
+
+`npm run release` writes `dist-release/latest.json` and prints the
+`gh release create` command. The updater fetches:
+
+```
+https://github.com/infonality/onionskin/releases/latest/download/latest.json
+```
+
+Two consequences worth knowing:
+
+- **The repository has to be reachable by the installed app.** While it is
+  private, that URL returns 404 and every check fails silently.
+- **Bump the version in both `package.json` and `src-tauri/tauri.conf.json`.**
+  `npm run release` refuses to run if they disagree, because a manifest whose
+  version matches the installed one would leave clients in a loop.
+
+Windows updates install through the NSIS installer rather than the MSI: it can
+replace a running installation without the MSI's elevation dance. The MSI is
+still built, for first-time installs.
 
 ## Keyboard shortcuts
 

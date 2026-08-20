@@ -6,6 +6,7 @@ import {
   pickTheme,
   type ThemeInfo,
 } from "../lib/themes";
+import { checkForUpdates } from "../lib/updates";
 import { schedulePersist } from "../state/actions";
 import { prettyKeys } from "../state/commands";
 import {
@@ -15,6 +16,9 @@ import {
   type ThemeChoice,
   type TypeFace,
 } from "../state/store";
+
+/** Injected by Vite from package.json; see vite.config.ts. */
+const APP_VERSION = __APP_VERSION__;
 
 function Modal({
   title,
@@ -263,6 +267,28 @@ export function SettingsSheet() {
         </Row>
         <Row label="Check spelling">
           <Toggle on={settings.spellcheck} onChange={(v) => update({ spellcheck: v })} />
+        </Row>
+      </section>
+
+      <section className="setting-group">
+        <h3>Updates</h3>
+        <Row
+          label="Check automatically"
+          hint="Looks for a new version shortly after launch. Nothing is installed without asking."
+        >
+          <Toggle
+            on={settings.autoCheckUpdates}
+            onChange={(v) => update({ autoCheckUpdates: v })}
+          />
+        </Row>
+        <Row label="Version" hint={`Onionskin ${APP_VERSION}`}>
+          <button
+            type="button"
+            className="btn"
+            onClick={() => void checkForUpdates({ silent: false })}
+          >
+            Check now
+          </button>
         </Row>
       </section>
 

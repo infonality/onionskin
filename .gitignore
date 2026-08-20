@@ -20,3 +20,6 @@ Thumbs.db
 website/artifact.html
 website/palettes.css
 website/*.msi
+
+# Release staging
+dist-release/

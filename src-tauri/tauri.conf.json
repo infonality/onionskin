@@ -43,7 +43,15 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": [
+      "msi",
+      "nsis",
+      "app",
+      "dmg",
+      "deb",
+      "rpm",
+      "appimage"
+    ],
     "category": "Productivity",
     "shortDescription": "A clean, modern Markdown editor",
     "longDescription": "Onionskin is a distraction-free Markdown editor with seamless live preview — Markdown syntax melts away as you type, leaving only the formatted document.",
@@ -81,6 +89,18 @@
     "linux": {
       "deb": {
         "depends": []
+      }
+    },
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY4MEZCMkVEN0M3MTVDODAKUldTQVhIRjg3YklQYUdxN0NqSkRiUy9RaStWZjRtK2RxMmRWTjdvRTY4MlpDdXUwR0FWWUgxUkYK",
+      "endpoints": [
+        "https://github.com/infonality/onionskin/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
       }
     }
   }
