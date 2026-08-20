@@ -1,8 +1,8 @@
-# Lumen
+# Onionskin
 
 A clean, modern Markdown editor built with **Tauri 2**, React and CodeMirror 6.
 
-Lumen mimics Typora's defining idea: there is no split pane and no preview
+Onionskin mimics Typora's defining idea: there is no split pane and no preview
 button. You type Markdown and it becomes the formatted document underneath your
 caret. Move away from a heading and the `##` melts off; move back and it
 returns, ready to edit.
@@ -58,7 +58,7 @@ Eleven built-in themes, five light and six dark:
 
 | Light | Dark |
 | --- | --- |
-| Lumen, Paper, GitHub, Solarized, Snow | Lumen, Midnight, Nord, Dracula, Gruvbox, Solarized |
+| Onionskin, Paper, GitHub, Solarized, Snow | Carbon, Midnight, Nord, Dracula, Gruvbox, Solarized |
 
 Each theme restyles the whole app — chrome, editor, code syntax colours and
 highlight marks. Pick one per mode in **Settings → Appearance**; the Mode

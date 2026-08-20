@@ -10,8 +10,8 @@ export interface ThemeInfo {
 
 export const THEMES: ThemeInfo[] = [
   {
-    id: "lumen-light",
-    label: "Lumen",
+    id: "onionskin",
+    label: "Onionskin",
     mode: "light",
     swatch: { chrome: "#f4f5f7", page: "#ffffff", ink: "#1f2328", accent: "#4c6ef5" },
   },
@@ -41,8 +41,8 @@ export const THEMES: ThemeInfo[] = [
   },
 
   {
-    id: "lumen-dark",
-    label: "Lumen",
+    id: "carbon",
+    label: "Carbon",
     mode: "dark",
     swatch: { chrome: "#131519", page: "#1a1d23", ink: "#d8dde5", accent: "#7d9bff" },
   },
@@ -78,8 +78,8 @@ export const THEMES: ThemeInfo[] = [
   },
 ];
 
-export const DEFAULT_LIGHT_THEME = "lumen-light";
-export const DEFAULT_DARK_THEME = "lumen-dark";
+export const DEFAULT_LIGHT_THEME = "onionskin";
+export const DEFAULT_DARK_THEME = "carbon";
 
 export const LIGHT_THEMES = THEMES.filter((t) => t.mode === "light");
 export const DARK_THEMES = THEMES.filter((t) => t.mode === "dark");

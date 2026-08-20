@@ -24,12 +24,12 @@ macro_rules! item {
 
 pub fn install(app: &AppHandle<Wry>) -> tauri::Result<()> {
     let about = AboutMetadataBuilder::new()
-        .name(Some("Lumen"))
+        .name(Some("Onionskin"))
         .version(Some(env!("CARGO_PKG_VERSION")))
         .comments(Some("A clean, modern Markdown editor."))
         .build();
 
-    let app_menu = SubmenuBuilder::new(app, "Lumen")
+    let app_menu = SubmenuBuilder::new(app, "Onionskin")
         .about(Some(about))
         .separator()
         .item(&item!(app, "settings", "Settings…", "CmdOrCtrl+,"))

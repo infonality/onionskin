@@ -124,7 +124,7 @@ export function buildStandaloneHtml(title: string, fragment: string): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="generator" content="Lumen">
+<meta name="generator" content="Onionskin">
 <title>${safeTitle}</title>
 <style>${katexCss}</style>
 <style>${DOCUMENT_CSS}</style>

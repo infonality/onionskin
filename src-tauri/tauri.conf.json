@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Lumen",
+  "productName": "Onionskin",
   "version": "0.1.0",
-  "identifier": "app.lumen.editor",
+  "identifier": "app.onionskin.editor",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Lumen",
+        "title": "Onionskin",
         "width": 1200,
         "height": 800,
         "minWidth": 640,
@@ -33,7 +33,9 @@
       "assetProtocol": {
         "enable": true,
         "scope": {
-          "allow": ["**"],
+          "allow": [
+            "**"
+          ],
           "deny": []
         }
       }
@@ -44,7 +46,7 @@
     "targets": "all",
     "category": "Productivity",
     "shortDescription": "A clean, modern Markdown editor",
-    "longDescription": "Lumen is a distraction-free Markdown editor with seamless live preview — Markdown syntax melts away as you type, leaving only the formatted document.",
+    "longDescription": "Onionskin is a distraction-free Markdown editor with seamless live preview — Markdown syntax melts away as you type, leaving only the formatted document.",
     "copyright": "",
     "icon": [
       "icons/32x32.png",
@@ -55,7 +57,13 @@
     ],
     "fileAssociations": [
       {
-        "ext": ["md", "markdown", "mdown", "mkd", "mdx"],
+        "ext": [
+          "md",
+          "markdown",
+          "mdown",
+          "mkd",
+          "mdx"
+        ],
         "name": "Markdown Document",
         "description": "Markdown Document",
         "role": "Editor",

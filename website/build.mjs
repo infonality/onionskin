@@ -77,8 +77,8 @@ const parts = [
     .map((l) => "  " + l)
     .join("\n")}\n  }\n}`,
   `:root[data-theme="dark"]:not([data-palette]) {\n${render(dark)}\n}`,
-  `:root[data-palette="lumen-light"] {\n${render(merged("lumen-light", "light"))}\n}`,
-  `:root[data-palette="lumen-dark"] {\n${render(merged("lumen-dark", "dark"))}\n}`,
+  `:root[data-palette="onionskin"] {\n${render(merged("onionskin", "light"))}\n}`,
+  `:root[data-palette="carbon"] {\n${render(merged("carbon", "dark"))}\n}`,
   ...LIGHT.map((id) => `:root[data-palette="${id}"] {\n${render(merged(id, "light"))}\n}`),
   ...DARK.map((id) => `:root[data-palette="${id}"] {\n${render(merged(id, "dark"))}\n}`),
 ];
@@ -106,12 +106,12 @@ const inlined = page.replace(/src="(shots\/[^"]+)"/g, (whole, path) => {
 // A published artifact is sandboxed and cannot hand the viewer a file, so its
 // call to action points at the project instead of a relative installer that
 // would silently do nothing.
-const RELEASES = "https://github.com/infonality/lumen/releases";
+const RELEASES = "https://github.com/infonality/onionskin/releases";
 writeFileSync(
   join(here, "artifact.html"),
   inlined
     .replace(
-      '<a class="btn" href="Lumen_0.1.0_x64_en-US.msi" download\n            >Windows installer <span class="size">3.4 MB</span></a\n          >',
+      '<a class="btn" href="Onionskin_0.1.0_x64_en-US.msi" download\n            >Windows installer <span class="size">3.4 MB</span></a\n          >',
       `<a class="btn" href="${RELEASES}" target="_blank" rel="noreferrer"\n            >Get the Windows installer <span class="size">3.4 MB</span></a\n          >`,
     )
     .replace(
@@ -135,7 +135,7 @@ writeFileSync(
     "<head>",
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
-    '<meta name="description" content="Lumen is a desktop Markdown editor with live preview: the Markdown syntax hides as you write and returns when the caret lands on it.">',
+    '<meta name="description" content="Onionskin is a desktop Markdown editor with live preview: the Markdown syntax hides as you write and returns when the caret lands on it.">',
     inlined.slice(0, split).trim(),
     "</head>",
     "<body>",

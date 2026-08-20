@@ -1,7 +1,7 @@
-# Lumen promo site
+# Onionskin promo site
 
 A single self-contained page. Colour comes from the editor's own theme tokens,
-so the site can wear any of Lumen's eleven palettes — and the theme picker in
+so the site can wear any of Onionskin's eleven palettes — and the theme picker in
 the Themes section is the real thing, not a mock-up.
 
 ## Building
@@ -28,7 +28,7 @@ Copy `index.html` to any static host. To make the download button work, put the
 installer next to it:
 
 ```bash
-cp src-tauri/target/release/bundle/msi/Lumen_0.1.0_x64_en-US.msi website/
+cp src-tauri/target/release/bundle/msi/Onionskin_0.1.0_x64_en-US.msi website/
 ```
 
 The installer is deliberately not committed — it is a 3.4 MB binary that would

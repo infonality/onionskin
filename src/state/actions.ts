@@ -385,9 +385,9 @@ export async function persistPrefs(immediate = false) {
   }
 }
 
-const WELCOME = `# Welcome to Lumen
+const WELCOME = `# Welcome to Onionskin
 
-Lumen is a **live-preview** Markdown editor: the syntax disappears as soon as
+Onionskin is a **live-preview** Markdown editor: the syntax disappears as soon as
 you move the caret away, so you read a finished document while you write one.
 
 ## Try it

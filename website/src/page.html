@@ -1,4 +1,4 @@
-<title>Lumen Markdown Editor</title>
+<title>Onionskin Markdown Editor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
@@ -10,7 +10,7 @@
 
 <style>
   /* ---------------------------------------------------------------------
-     Lumen — promotional page
+     Onionskin — promotional page
 
      Colour comes from the editor's own theme tokens (see the palette block
      above, generated from src/styles/*.css). The page can therefore wear any
@@ -755,7 +755,7 @@
 
 <header class="nav">
   <div class="wrap nav-inner">
-    <a class="wordmark" href="#top">Lumen <span class="mk">.md</span></a>
+    <a class="wordmark" href="#top">Onionskin <span class="mk">.md</span></a>
     <a class="btn" href="#download">Download <span class="size">3.4 MB</span></a>
   </div>
 </header>
@@ -768,7 +768,7 @@
         <p class="eyebrow"><span class="mk">#</span> Markdown editor for the desktop</p>
         <h1>The syntax gets <em>out of the way</em>.</h1>
         <p class="lede">
-          Lumen renders Markdown as you type it. Move the caret onto a line and its
+          Onionskin renders Markdown as you type it. Move the caret onto a line and its
           raw syntax comes back, ready to edit. There is no split pane, no preview
           button, and nothing to toggle.
         </p>
@@ -826,12 +826,16 @@
         <h2>One document, not two.</h2>
         <p class="lede">
           Every other editor makes you choose: read the Markdown or read the result.
-          Lumen shows you the result and hands back the source only where you are
+          Onionskin shows you the result and hands back the source only where you are
           working.
+        </p>
+        <p>
+          Onionskin paper is thin enough to read the next sheet through. The markup
+          here works the same way — still on the page, just not in your way.
         </p>
       </div>
       <figure>
-        <div class="shot"><img src="shots/01-hero.png" alt="Lumen showing a product spec: the YAML front matter collapsed to a labelled chip, a heading, a blockquote and a task list with real checkboxes, beside a file tree." width="1366" height="873" loading="lazy" /></div>
+        <div class="shot"><img src="shots/01-hero.png" alt="Onionskin showing a product spec: the YAML front matter collapsed to a labelled chip, a heading, a blockquote and a task list with real checkboxes, beside a file tree." width="1366" height="873" loading="lazy" /></div>
         <figcaption>Front matter folds into a chip. Tasks become checkboxes you can click.</figcaption>
       </figure>
     </div>
@@ -886,8 +890,8 @@
 
       <div class="pair">
         <figure>
-          <div class="shot"><img src="shots/02-rich.png" alt="The same document in the light Lumen theme." width="1366" height="873" loading="lazy" /></div>
-          <figcaption>Lumen Light</figcaption>
+          <div class="shot"><img src="shots/02-rich.png" alt="The same document in the light Onionskin theme." width="1366" height="873" loading="lazy" /></div>
+          <figcaption>Onionskin</figcaption>
         </figure>
         <figure>
           <div class="shot"><img src="shots/05-dark.png" alt="The same document in the Nord theme, with cool blue-grey tones." width="1366" height="873" loading="lazy" /></div>
@@ -956,7 +960,7 @@
         <li>
           <h3>Notices edits from elsewhere</h3>
           <p>
-            Change a file in another program and Lumen spots it when the window regains
+            Change a file in another program and Onionskin spots it when the window regains
             focus, asking which version wins if your buffer is dirty.
           </p>
         </li>
@@ -1013,7 +1017,7 @@
         <h2>Start writing.</h2>
         <p class="lede">Free, and yours to keep on your own disk.</p>
         <div class="cta-row">
-          <a class="btn" href="Lumen_0.1.0_x64_en-US.msi" download
+          <a class="btn" href="Onionskin_0.1.0_x64_en-US.msi" download
             >Windows installer <span class="size">3.4 MB</span></a
           >
         </div>
@@ -1028,8 +1032,8 @@
 
 <footer>
   <div class="wrap row">
-    <span>Lumen 0.1.0 — a Markdown editor built with Tauri 2, React and CodeMirror 6.</span>
-    <span><a href="https://github.com/infonality/lumen">Source</a></span>
+    <span>Onionskin 0.1.0 — a Markdown editor built with Tauri 2, React and CodeMirror 6.</span>
+    <span><a href="https://github.com/infonality/onionskin">Source</a></span>
   </div>
 </footer>
 
@@ -1039,12 +1043,12 @@
 
     // ---- theme picker: the page wears the editor's own palettes ----------
     var THEMES = [
-      { id: "lumen-light", label: "Lumen", mode: "light" },
+      { id: "onionskin", label: "Onionskin", mode: "light" },
       { id: "paper", label: "Paper", mode: "light" },
       { id: "github-light", label: "GitHub", mode: "light" },
       { id: "solarized-light", label: "Solarized", mode: "light" },
       { id: "snow", label: "Snow", mode: "light" },
-      { id: "lumen-dark", label: "Lumen Dark", mode: "dark" },
+      { id: "carbon", label: "Carbon", mode: "dark" },
       { id: "midnight", label: "Midnight", mode: "dark" },
       { id: "nord", label: "Nord", mode: "dark" },
       { id: "dracula", label: "Dracula", mode: "dark" },
@@ -1078,7 +1082,7 @@
       });
       if (remember) {
         try {
-          localStorage.setItem("lumen.site.palette", id);
+          localStorage.setItem("onionskin.site.palette", id);
         } catch (e) {
           /* private mode */
         }
@@ -1122,7 +1126,7 @@
     probe.removeAttribute("data-palette");
 
     try {
-      var saved = localStorage.getItem("lumen.site.palette");
+      var saved = localStorage.getItem("onionskin.site.palette");
       if (saved) select(saved, false);
     } catch (e) {
       /* private mode */

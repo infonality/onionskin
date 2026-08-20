@@ -41,9 +41,9 @@ function useTheme() {
 
     // Mirrored into localStorage so the pre-paint script in index.html can
     // apply the same colours before React mounts.
-    localStorage.setItem("lumen.theme", theme);
-    localStorage.setItem("lumen.palette.light", lightPalette);
-    localStorage.setItem("lumen.palette.dark", darkPalette);
+    localStorage.setItem("onionskin.theme", theme);
+    localStorage.setItem("onionskin.palette.light", lightPalette);
+    localStorage.setItem("onionskin.palette.dark", darkPalette);
 
     media.addEventListener("change", apply);
     return () => media.removeEventListener("change", apply);
@@ -119,8 +119,8 @@ export default function App() {
 
   useEffect(() => {
     document.title = activeDoc
-      ? `${activeDoc.text !== activeDoc.savedText ? "• " : ""}${activeDoc.name} — Lumen`
-      : "Lumen";
+      ? `${activeDoc.text !== activeDoc.savedText ? "• " : ""}${activeDoc.name} — Onionskin`
+      : "Onionskin";
   }, [activeDoc]);
 
   // --- native menu + window events -----------------------------------------
@@ -368,7 +368,7 @@ export default function App() {
             />
           ) : (
             <div className="empty-state">
-              <h1>Lumen</h1>
+              <h1>Onionskin</h1>
               <p>A quiet place to write Markdown.</p>
               <div className="empty-actions">
                 <button type="button" className="btn btn-primary" onClick={() => actions.newDocument()}>
