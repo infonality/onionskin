@@ -140,11 +140,13 @@ Bump `src-tauri/tauri.conf.json` to match, commit, then tag and push:
 git tag -a v0.2.1 -m "Onionskin 0.2.1" && git push origin main v0.2.1
 ```
 
-The release stays a **draft** until `scripts/verify-release.mjs` confirms the
-manifest names every platform, each entry carries a signature, and the file
-each signature covers is the file its URL points at. Only then does the
-workflow flip it public. A build that fails on one platform therefore cannot
-ship a release that half the users cannot update from.
+The release stays a **draft** until `scripts/verify-release.mjs` passes. It
+downloads every artifact GitHub is serving and checks the minisign signature
+against those actual bytes, using the same public key the installed app
+carries in `tauri.conf.json` — not just that the manifest looks plausible.
+It also requires every platform to be present, so a build that fails on one
+platform cannot ship a release that a quarter of users can never update from.
+Only once all of that holds does the workflow flip the release public.
 
 `workflow_dispatch` runs the same thing against a tag that already exists,
 which is how you backfill a platform onto a release that shipped without it.
