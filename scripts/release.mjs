@@ -97,7 +97,7 @@ for (const a of assets) console.log(`  ${a.replace(repo + "\\", "").replace(repo
 if (unsigned.length) {
   console.log(
     `\n  WARNING: ${unsigned.join(", ")} has no .sig — the updater will reject it.` +
-      `\n  Rebuild with TAURI_SIGNING_PRIVATE_KEY_PATH set.`,
+      `\n  Rebuild with TAURI_SIGNING_PRIVATE_KEY set to the key contents.`,
   );
 }
 

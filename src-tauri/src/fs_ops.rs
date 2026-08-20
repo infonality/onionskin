@@ -203,7 +203,8 @@ pub fn scan_markdown_files(root: String, limit: usize) -> Result<Vec<Entry>, Str
         }
     }
 
-    out.sort_by(|a, b| b.modified.cmp(&a.modified));
+    // Newest first.
+    out.sort_by_key(|e| std::cmp::Reverse(e.modified));
     Ok(out)
 }
 

@@ -1,0 +1,81 @@
+# Typechecks the frontend and compiles the Rust side on all three platforms.
+#
+# The cross-platform matrix earns its keep here: `menu.rs` is entirely
+# `#![cfg(target_os = "macos")]` and `fs_ops.rs` branches per platform, so
+# those paths are never built by a developer on a single machine. Without this,
+# a macOS-only compile error ships undetected until someone runs a release.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Typecheck and bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # `npm run build` is `tsc --noEmit && vite build`.
+      - run: npm run build
+
+  rust:
+    name: Clippy (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux build dependencies
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libxdo-dev \
+            libssl-dev \
+            build-essential \
+            patchelf \
+            file \
+            curl \
+            wget
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+          key: ci-${{ matrix.os }}
+
+      - run: npm ci
+
+      # tauri-build validates the config in build.rs and fails when
+      # `frontendDist` is missing, so the bundle has to exist before cargo runs.
+      - run: npm run build
+
+      - name: Clippy
+        working-directory: src-tauri
+        run: cargo clippy --all-targets -- -D warnings

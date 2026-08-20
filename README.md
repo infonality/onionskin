@@ -124,10 +124,52 @@ Other scripts:
 Onionskin updates itself. The app checks for a new version shortly after
 launch, and never installs anything without asking.
 
-Updates are signed with a keypair that is **not** the same thing as a code
-signing certificate. The public half lives in `src-tauri/tauri.conf.json`; the
-private half must stay off the repository. Losing it means existing installs
-can never accept another update, so back it up somewhere durable.
+### Through CI
+
+Pushing a `v*` tag runs `.github/workflows/release.yml`, which builds macOS
+(Apple Silicon and Intel), Linux and Windows in parallel, attaches every
+installer to a draft release, and writes the `latest.json` the updater reads.
+
+```bash
+npm version 0.2.1 --no-git-tag-version
+```
+
+Bump `src-tauri/tauri.conf.json` to match, commit, then tag and push:
+
+```bash
+git tag -a v0.2.1 -m "Onionskin 0.2.1" && git push origin main v0.2.1
+```
+
+The release stays a **draft** until `scripts/verify-release.mjs` confirms the
+manifest names every platform, each entry carries a signature, and the file
+each signature covers is the file its URL points at. Only then does the
+workflow flip it public. A build that fails on one platform therefore cannot
+ship a release that half the users cannot update from.
+
+`workflow_dispatch` runs the same thing against a tag that already exists,
+which is how you backfill a platform onto a release that shipped without it.
+
+### The signing secret
+
+Updates are signed with a minisign keypair, which is **not** a code signing
+certificate and does nothing about SmartScreen or Gatekeeper. The public half
+lives in `src-tauri/tauri.conf.json`; the private half must stay off the
+repository. Losing it means existing installs can never accept another update,
+so back it up somewhere durable.
+
+CI reads it from the repository secret `TAURI_SIGNING_PRIVATE_KEY`, which holds
+the key's *contents*:
+
+```bash
+gh secret set TAURI_SIGNING_PRIVATE_KEY < ~/.onionskin/updater.key
+```
+
+Add `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` too if the key has a passphrase. Every
+build job checks the secret is present before it starts compiling, because the
+alternative is discovering the problem twenty minutes later in the form of
+installers with no `.sig`.
+
+### Building a release locally
 
 ```bash
 export TAURI_SIGNING_PRIVATE_KEY="$(cat ~/.onionskin/updater.key)"
@@ -135,12 +177,12 @@ npm run app:build
 npm run release
 ```
 
-Tauri reads the key *contents* from that variable. The `TAURI_SIGNING_PRIVATE_KEY_PATH`
-variant is not honoured by the bundler, and the build will quietly produce
-installers with no signatures — which the updater then refuses.
+Tauri reads the key *contents* from that variable. The
+`TAURI_SIGNING_PRIVATE_KEY_PATH` variant is not honoured by the bundler, and
+the build will quietly produce installers with no signatures.
 
-`npm run release` writes `dist-release/latest.json` and prints the
-`gh release create` command. The updater fetches:
+`npm run release` writes `dist-release/latest.json` for the current platform
+only and prints the `gh release create` command. The updater fetches:
 
 ```
 https://github.com/infonality/onionskin/releases/latest/download/latest.json
@@ -158,6 +200,18 @@ Two consequences worth knowing:
 Windows updates install through the NSIS installer rather than the MSI: it can
 replace a running installation without the MSI's elevation dance. The MSI is
 still built, for first-time installs.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every push to `main` and every pull request:
+the frontend typecheck and bundle, then `cargo clippy -D warnings` on Ubuntu,
+macOS and Windows.
+
+The three-way matrix is not ceremony. `menu.rs` is entirely
+`#![cfg(target_os = "macos")]` and `fs_ops.rs` branches per platform, so a
+developer working on one machine never compiles the other two. Without CI, a
+macOS-only compile error stays invisible until a release build hits it.
+
 
 ## Keyboard shortcuts
 

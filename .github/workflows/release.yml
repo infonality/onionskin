@@ -1,0 +1,156 @@
+# Builds Onionskin for every supported platform and attaches the installers to
+# a GitHub release, together with the signed `latest.json` the in-app updater
+# reads.
+#
+# Triggered by pushing a `v*` tag, or run by hand against a tag that already
+# exists — which is how you backfill platforms onto a release that shipped
+# with only some of them.
+#
+# Requires the repository secret TAURI_SIGNING_PRIVATE_KEY, holding the
+# *contents* of the minisign key. Without it the bundler quietly produces
+# installers with no `.sig`, which the updater then refuses, so each job checks
+# for the secret before spending twenty minutes compiling.
+
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build (e.g. v0.2.1)"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  # `github.event.inputs` rather than the `inputs` context: the former lives on
+  # the `github` context, which is readable everywhere, including here.
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # One platform failing should not throw away the others. The release
+      # stays a draft until `finalize` confirms the manifest is complete, so a
+      # partial set can never reach anyone.
+      fail-fast: false
+      matrix:
+        include:
+          - label: macOS (Apple Silicon)
+            os: macos-latest
+            rust-target: aarch64-apple-darwin
+            args: --target aarch64-apple-darwin --bundles app,dmg
+          - label: macOS (Intel)
+            os: macos-latest
+            rust-target: x86_64-apple-darwin
+            args: --target x86_64-apple-darwin --bundles app,dmg
+          # Pinned to 22.04 deliberately. The binary links against the runner's
+          # glibc, so building on a newer image yields something that refuses to
+          # start on older distributions. When this image retires, move to the
+          # oldest still-supported one rather than to ubuntu-latest.
+          - label: Linux (x86_64)
+            os: ubuntu-22.04
+            rust-target: ""
+            args: --bundles deb,rpm,appimage
+          - label: Windows (x64)
+            os: windows-latest
+            rust-target: ""
+            args: --bundles msi,nsis
+
+    steps:
+      # Checked through an env var, not `if: secrets.X == ''`: the secrets
+      # context is not reliably readable from a step condition.
+      - name: Require the updater signing key
+        shell: bash
+        env:
+          SIGNING_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          if [ -z "$SIGNING_KEY" ]; then
+            echo "::error::TAURI_SIGNING_PRIVATE_KEY is not set. The build would produce unsigned installers that the updater rejects."
+            exit 1
+          fi
+          echo "Signing key present."
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Install Linux build dependencies
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libxdo-dev \
+            libssl-dev \
+            build-essential \
+            patchelf \
+            file \
+            curl \
+            wget
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+          key: ${{ matrix.label }}
+
+      - run: npm ci
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ env.TAG }}
+          releaseName: Onionskin __VERSION__
+          releaseDraft: true
+          prerelease: false
+          includeUpdaterJson: true
+          args: ${{ matrix.args }}
+
+  finalize:
+    name: Verify and publish
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Each build job merges its own platform into latest.json independently,
+      # so a complete manifest is an assumption rather than a guarantee. Prove
+      # it before anyone can download the release.
+      - name: Verify the update manifest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/verify-release.mjs "$TAG"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit "$TAG" --draft=false
