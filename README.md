@@ -199,9 +199,11 @@ Two consequences worth knowing:
   `npm run release` refuses to run if they disagree, because a manifest whose
   version matches the installed one would leave clients in a loop.
 
-Windows updates install through the NSIS installer rather than the MSI: it can
-replace a running installation without the MSI's elevation dance. The MSI is
-still built, for first-time installs.
+A CI-built manifest carries a generic `{os}-{arch}` key plus one per installer
+format — `windows-x86_64-nsis`, `linux-x86_64-deb` and so on — so an install
+updates through the same packaging it arrived in, falling back to the generic
+key when nothing matches. `npm run release` only ever writes the generic one,
+which is another reason to release through CI.
 
 ## Continuous integration
 

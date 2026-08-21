@@ -118,13 +118,28 @@ function signatureCovers(bytes, parsed, pub) {
 
 const pub = appPublicKey();
 const rows = [];
+const notes = [];
 
-for (const platform of EXPECTED) {
-  const entry = (manifest.platforms || {})[platform];
-  if (!check(!!entry, `no manifest entry for ${platform}`)) {
-    rows.push([platform, "MISSING", "-", "-"]);
-    continue;
+// tauri-action emits a generic `{os}-{arch}` key plus one per installer format,
+// so an NSIS install updates through NSIS and an MSI install through MSI. Every
+// entry gets verified; the generic four are additionally required to exist,
+// since they are the fallback when no format-specific key matches.
+const platforms = manifest.platforms || {};
+for (const key of EXPECTED) {
+  check(key in platforms, `no manifest entry for ${key}`);
+}
+
+// Several keys point at the same artifact. Download each file once.
+const cache = new Map();
+function assetBytes(name) {
+  if (!cache.has(name)) {
+    download(name);
+    cache.set(name, readFileSync(join(dir, name)));
   }
+  return cache.get(name);
+}
+
+for (const [platform, entry] of Object.entries(platforms)) {
   if (!check(!!entry.signature, `${platform}: empty signature`)) {
     rows.push([platform, entry.url.split("/").pop() ?? "?", "EMPTY", "-"]);
     continue;
@@ -133,20 +148,22 @@ for (const platform of EXPECTED) {
   const urlFile = decodeURIComponent(entry.url.split("/").pop() ?? "");
   const parsed = parseSignature(entry.signature);
 
-  check(
-    parsed.file === urlFile,
-    `${platform}: signature covers ${parsed.file}, the URL points at ${urlFile}`,
-  );
+  // Not a failure. tauri-action renames the macOS updater tarball per
+  // architecture on upload while the signature's trusted comment keeps the
+  // bundler's original name. The updater never reads that comment — it checks
+  // the signature against the bytes, which is what actually runs below.
+  if (parsed.file !== urlFile) {
+    notes.push(`${platform}: signature names ${parsed.file}, asset is ${urlFile}`);
+  }
 
   if (!check(assetNames.has(urlFile), `${platform}: ${urlFile} is not attached to the release`)) {
     rows.push([platform, urlFile, "-", "MISSING"]);
     continue;
   }
 
-  download(urlFile);
-  const bytes = readFileSync(join(dir, urlFile));
+  const bytes = assetBytes(urlFile);
   const failure = signatureCovers(bytes, parsed, pub);
-  check(!failure, failure ? `${platform}: ${failure}` : "");
+  if (failure) check(false, `${platform}: ${failure}`);
 
   rows.push([
     platform,
@@ -164,6 +181,11 @@ console.log(`\n${tag} — manifest version ${manifest.version}, draft: ${release
 console.log(line(headers));
 console.log(line(widths.map((w) => "-".repeat(w))));
 for (const r of rows) console.log(line(r));
+
+if (notes.length) {
+  console.log("\nNotes (not failures):");
+  for (const n of notes) console.log(`  - ${n}`);
+}
 
 if (problems.length) {
   console.error(`\n${problems.length} problem(s):`);
